@@ -21,13 +21,17 @@ function check_version {
 	fi
 }
 
+function dns_setup {
+	echo "127.0.0.1   linuxfreak.com www.linuxfreak.com" >> /etc/hosts
+}
+
 function web_svr_setup {
 	# nginx install/setup sourced from: https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-centos-7
 	# Add EPEL repo
 	yum install epel-release -y
 	yum install nginx -y
-	systemctl start nginx
-	systemctl enable nginx
+	systemctl start nginx.service
+	systemctl enable nginx.service
 	firewall-cmd --permanent --zone=public --add-service=http 
 	firewall-cmd --permanent --zone=public --add-service=https
 	firewall-cmd --reload
@@ -41,15 +45,23 @@ function web_svr_setup {
 
 	cp -rf linuxfreak.com /usr/share/nginx
 	cp -f conf_files/linuxfreak.com.conf /etc/nginx/conf.d
+	chown -R nginx. /usr/share/nginx/linuxfreak.com
+	chmod -R 755 /usr/share/nginx/linuxfreak.com
 	systemctl reload nginx.service
-	firefox linuxfreak.com &
 }
 
-# mysql install/setup
-
 # Configure SeLinux
+function config_selinux {
+	#this change does not take effect until the system is rebooted
+	sed -i's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+}
+
+# Setup MySQL DB for web app
 
 # PRIMARY FUNCTION CALLS
 check_root
 check_version
+dns_setup
 web_svr_setup
+config_selinux
+reboot
