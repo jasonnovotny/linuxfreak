@@ -1,3 +1,0 @@
-[Sun Nov 26 22:37:56.066834 2017] [:error] [pid 4537] [client 127.0.0.1:42990] PHP Notice:  Undefined index: firstname in /var/www/vhosts/linuxfreak.com/public_html/freak.php on line 3, referer: http://linuxfreak.com/
-[Sun Nov 26 22:37:56.067482 2017] [:error] [pid 4537] [client 127.0.0.1:42990] PHP Notice:  Undefined index: email in /var/www/vhosts/linuxfreak.com/public_html/freak.php on line 4, referer: http://linuxfreak.com/
-[Sun Nov 26 22:37:56.147826 2017] [:error] [pid 4537] [client 127.0.0.1:42990] PHP Warning:  mysqli::__construct(): (HY000/1045): Access denied for user 'username'@'localhost' (using password: YES) in /var/www/vhosts/linuxfreak.com/public_html/freak.php on line 13, referer: http://linuxfreak.com/
