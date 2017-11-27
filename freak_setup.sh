@@ -53,7 +53,7 @@ function web_svr_setup {
 # Configure SeLinux
 function config_selinux {
 	#this change does not take effect until the system is rebooted
-	sed -i's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+	sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
 }
 
 # Setup MySQL DB for web app
