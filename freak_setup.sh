@@ -53,7 +53,21 @@ function web_svr_setup {
 # Configure SeLinux
 function config_selinux {
 	#this change does not take effect until the system is rebooted
-	sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+	#sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+
+	#The above code will disable selinux but the objective here is
+	#to understand, configure, and utilize SELinux so it has been
+	#commented out to force the objective
+	ausearch -c 'nginx' --raw | audit2allow -M my-nginx
+	semodule -i my-nginx.pp
+	#the nginx service will fail to start until
+	#after the above changes selinux changes are made
+	#start the service again now and check for failures
+	systemctl start nginx.service
+	if [ $? != "0" ]; then
+		echo -e "\nNginx has failed to start, please review the failure"
+		exit 2
+	fi
 }
 
 # Setup MySQL DB for web app
@@ -64,4 +78,3 @@ check_version
 dns_setup
 web_svr_setup
 config_selinux
-reboot
