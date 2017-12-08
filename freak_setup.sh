@@ -30,7 +30,8 @@ function web_svr_setup {
 	# Add EPEL repo
 	yum install epel-release -y
 	yum install nginx -y
-	systemctl start nginx.service
+	#nginx will not start until the selinux changes below are made
+	#systemctl start nginx.service
 	systemctl enable nginx.service
 	firewall-cmd --permanent --zone=public --add-service=http 
 	firewall-cmd --permanent --zone=public --add-service=https
@@ -52,16 +53,16 @@ function web_svr_setup {
 
 # Configure SeLinux
 function config_selinux {
-	#this change does not take effect until the system is rebooted
-	#sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-
-	#The above code will disable selinux but the objective here is
-	#to understand, configure, and utilize SELinux so it has been
-	#commented out to force the objective
+	# Needed to allow nginx to access the web app files
 	ausearch -c 'nginx' --raw | audit2allow -M my-nginx
 	semodule -i my-nginx.pp
+
+	#Needed to allow nginx to access the conf.d config files
+	ausearch -c 'accounts-daemon' --raw | audit2allow -M my-accountsdaemon
+	semodule -i my-accountsdaemon.pp
+
 	#the nginx service will fail to start until
-	#after the above changes selinux changes are made
+	#after the above selinux changes are made
 	#start the service again now and check for failures
 	systemctl start nginx.service
 	if [ $? != "0" ]; then
@@ -70,7 +71,7 @@ function config_selinux {
 	fi
 }
 
-# Setup MySQL DB for web app
+# TO-DO: Setup MySQL DB for web app
 
 # PRIMARY FUNCTION CALLS
 check_root
@@ -78,3 +79,6 @@ check_version
 dns_setup
 web_svr_setup
 config_selinux
+# END FUNCTION CALLS
+firefox linuxfreak.com&
+exit
