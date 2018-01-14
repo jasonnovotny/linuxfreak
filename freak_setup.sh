@@ -71,6 +71,25 @@ function config_selinux {
 	fi
 }
 
+function config_mysql {
+	echo "installing mysql"
+	yum localinstall https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm -y
+	yum install mysql-community-server -y
+
+	echo "setting up mysql"
+	systemctl start mysqld
+	tempPass=$( grep 'temporary password' /var/log/mysqld.log | awk '{ print$11 }' )
+	echo -n "Enter your desired MySQL Password [ENTER]: ";read newPassword
+	mysqladmin -u root -p"$tempPass" password "$newPassword"
+	echo -e "[client]\nuser=root\npassword="$newPassword"" > /root/.my.cnf
+
+	echo "building DB table"
+	mysql -e "CREATE DATABASE cust_info"
+	mysql -e "CREATE TABLE cust_info.info ( firstname VARCHAR(30), lastname VARCHAR(30), email VARCHAR(30), date DATE );"
+
+	echo "completed mysql setup"
+}
+
 # TO-DO: Setup MySQL DB for web app
 
 # PRIMARY FUNCTION CALLS
@@ -79,6 +98,7 @@ check_version
 dns_setup
 web_svr_setup
 config_selinux
+config_mysql
 # END FUNCTION CALLS
 firefox linuxfreak.com&
 exit
