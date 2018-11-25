@@ -2,8 +2,12 @@
 #set -x
 #set -e
 
-echo "Setting up LinuxFreak.com test web-server and database.."
+# TO-DO:
+# -Create a check for an existing mysql install; script can only be run once currently
+# -Setup MySQL DB for web app
+# -Update MySQL version used
 
+echo "Setting up LinuxFreak.com test web-server and database.."
 # Must run script as root
 function check_root {
 	if [ $EUID -ne 0 ]; then
@@ -36,14 +40,12 @@ function web_svr_setup {
 	firewall-cmd --permanent --zone=public --add-service=http 
 	firewall-cmd --permanent --zone=public --add-service=https
 	firewall-cmd --reload
-
 	#Default server root: /usr/share/nginx/html
 	#Defualt server block config file: /etc/nginx/conf.d/default.conf
 	#Additional server blocks, known as Virtual Hosts in Apache,
 	# can be added by creating new conf files in /etc/nginx/conf.d.
 	# Files that end with .conf in that directory will be loaded when Nginx is started.
 	# The main Nginx configuration file is located at: /etc/nginx/nginx.conf
-
 	cp -rf linuxfreak.com /usr/share/nginx
 	cp -f conf_files/linuxfreak.com.conf /etc/nginx/conf.d
 	chown -R nginx. /usr/share/nginx/linuxfreak.com
@@ -90,8 +92,6 @@ function config_mysql {
 	echo "completed mysql setup"
 }
 
-# TO-DO: Setup MySQL DB for web app
-
 # PRIMARY FUNCTION CALLS
 check_root
 check_version
@@ -101,4 +101,8 @@ config_selinux
 config_mysql
 # END FUNCTION CALLS
 firefox linuxfreak.com&
-exit
+# GO BACK TO MAIN SCRIPT
+scriptPathAdmin=$( find / -name "adminTools.sh" 2> /dev/null )
+su -c $scriptPathAdmin
+#exit
+
