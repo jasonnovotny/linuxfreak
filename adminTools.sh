@@ -74,22 +74,24 @@ function add_user {
 		addUserList[b]=$usrHomeDir
 		case $usrHomeDir in
 			[Yy]* )
-				useradd -mp ${addUserList[a]};
+				useradd -m ${addUserList[a]};
 				break;;
 			[Nn]* )
-				useradd -Mp ${addUserList[a]};
+				useradd -M ${addUserList[a]};
 				break;;
 			* ) echo "Please answer yes or no";;
 		esac
 	done
-	# add user to sudoers section
+	# set the users password
+	passwd ${addUserList[a]}
+	# add user to sudoers section query
 	while true; do
-		read -p "Should ${addUserList[u]} be added to sudoers (y/n)?: " usrSudoers
+		read -p "Should ${addUserList[a]} be added to sudoers (y/n)?: " usrSudoers
 		# add answer to array in case needed later
 		queryUserHome[s]=$usrSudoers
 		case $usrSudoers in
 			[Yy]* )
-				sed -i -E '/root.*ALL/a  '${addUserList[u]}'    ALL\=\(ALL\)       ALL' /etc/sudoers
+				sed -i -E '/root.*ALL/a  '${addUserList[a]}'    ALL\=\(ALL\)       ALL' /etc/sudoers
 				break;;
 			[Nn]* )
 				break;;
@@ -114,7 +116,7 @@ function del_user {
 	fi
 	# check if user home dir should be removed
 	while true; do
-		read -p "Should ${addUserList[a]}'s home directory be deleted (y/n)?: " usrHomeDirDel
+		read -p "Should ${delUserList[a]}'s home directory be deleted (y/n)?: " usrHomeDirDel
 		# add answer to array in case needed for future features
 		delUserList[b]=$usrHomeDirDel
 		case $usrHomeDirDel in
