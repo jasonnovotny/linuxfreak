@@ -188,7 +188,7 @@ function run_menu {
 			"4")
 				printf "\n"
 				scriptPath=$( find / -name "freakSetup.sh" 2> /dev/null )
-				su -c $scriptPath
+				su -c $scriptPath 2>&1 | tee -a $scriptPath/freaksetup.log
 				break;;
 			"5")
 				printf "\n"
